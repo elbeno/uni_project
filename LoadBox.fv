@@ -1,0 +1,58 @@
+(Shape (Width 300)
+  (Rim (Pen 10)
+    (Frame
+      (Rim (Pen 5)
+        (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+        (Font (Family "fixed") (PointSize 130))
+        (VBox
+          (Text (BgColor "Yellow") "Load Graph File")
+          (Glue 10)
+          (HBox 
+            Fill 
+            (Shape (Width 150)
+              (DirMenu (For newfromfile))
+            )
+            Fill
+            (Boolean %suff "*.grp")
+            Fill
+          )
+          (Glue 5)
+          (Shape (Height 155)
+            (Frame Lowered (BgColor "White")
+              (FileBrowser %newfromfile (ReadOnly TRUE))
+            )
+          )
+          (Glue 5)
+          (Frame Lowered (BgColor "White")
+            (Helper (For newfromfile))
+          )
+          (Glue 5)
+          (Radio %overwrite
+            =makenew
+            (HBox
+              Fill
+              (Choice %makenew "Make New")
+              Fill
+              (Choice %usecurrent "Overwrite Current")
+              Fill
+            )
+          )
+          (Glue 10)
+          (HBox
+            Fill
+            (Button %load "Load")
+            Fill
+            (Button %cancel "Cancel")
+            Fill
+          )
+        )    
+      )
+    )
+  )
+)
+
+
+
+
+
+

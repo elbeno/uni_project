@@ -1,0 +1,11 @@
+rm *.*~
+rm *~
+rm *.BAK
+rm *.io
+rm *.ix
+rm *.mo
+rm *.mx
+chmod 644 *
+chmod 744 cleanup
+
+

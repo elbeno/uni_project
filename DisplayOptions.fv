@@ -1,0 +1,110 @@
+(Shape (Width 300)
+(Rim (Pen 10)
+  (Frame
+    (Rim (Pen 5)
+      (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+      (Font (Family "fixed") (PointSize 130) (WeightName "medium"))
+      (VBox
+        (Text (BgColor "Yellow") "Display Options")
+        (Glue 10)
+        (Frame Lowered
+          (VBox
+            (HBox
+              Fill
+              (VBox
+                (Glue 2)
+                (Boolean %markerson "")
+                (Boolean %lineson "")
+                (Boolean %tickson "")
+                (Glue 2)
+              )
+              (VBox
+                (Glue 2)
+                (Text (LeftAlign #TRUE) "Display Point Markers")
+                (Text (LeftAlign #TRUE) "Display Line Segments")
+                (Text (LeftAlign #TRUE) "Display Axis Ticks")
+                (HBox
+                  (Text (LeftAlign #TRUE) "Tick Spacing:")
+                  (Shape (Width 50) (Frame Lowered (TypeIn (BgColor "White"))))
+                  Fill
+                )
+                (Glue 2)
+              )
+              Fill
+            )
+          ) 
+        )
+        (Glue 5)
+        (Frame Lowered
+          (VBox
+            (Glue 2)
+            (Text "Domain of Graph:")
+            (Glue 5)
+            (Radio %domain =mandomain
+              (HBox
+                Fill
+                (Choice %autodomain 
+                  (Text (LeftAlign #TRUE) "Auto")
+                )
+                Fill
+                (Choice %mandomain
+                    (Text (LeftAlign #TRUE) "Manual")
+                )
+                Fill
+              )
+            )
+            (Glue 5)
+            (HBox
+              Fill
+              (Shape (Width 50) (Frame Lowered (TypeIn (BgColor "White"))))
+              (Glue 5)
+              (Text "<")
+              (Text %domainvar "X")
+              (Text "<")
+              (Glue 5)
+              (Shape (Width 50) (Frame Lowered (TypeIn (BgColor "White")))) 
+              Fill
+            )
+            (Glue 2)
+          )
+        )
+        (Glue 5)
+        (Frame Lowered
+          (VBox
+            (Glue 2)
+            (Text "Range of Graph:")
+            (Glue 5)
+            (Radio %range =autorange
+              (HBox
+                Fill
+                (Choice %autorange 
+                  (Text (LeftAlign #TRUE) "Auto")
+                )
+                Fill
+                (Choice %manrange
+                    (Text (LeftAlign #TRUE) "Manual")
+                )
+                Fill
+              )
+            )
+            (Glue 5)
+            (HBox
+              Fill
+              (Shape (Width 50) (Frame Lowered (TypeIn (BgColor "White"))))
+              (Glue 5)
+              (Text "<")
+              (Text %rangevar "Y")
+              (Text "<")
+              (Glue 5)
+              (Shape (Width 50) (Frame Lowered (TypeIn (BgColor "White"))))
+              Fill
+            )
+            (Glue 2)
+          )
+        )
+
+      )  
+    )
+  )
+)
+)

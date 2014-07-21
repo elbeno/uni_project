@@ -1,0 +1,93 @@
+(Shape 
+(Rim (Pen 10)
+  (Frame
+    (Rim (Pen 5)
+      (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+      (Font (Family "fixed") (PointSize 130) (WeightName "medium"))
+      (VBox
+        (Text (BgColor "Yellow") "Data Controls")
+        (Glue 10)
+        (HBox
+        Fill
+          (VBox
+            Fill
+            (HBox
+              (VBox
+                Fill
+                (Button %add "Add")
+                (Glue 5)
+                (Button %remove "Remove")
+                Fill
+              )
+              (Glue 5)
+              (Shape (Width 82)
+              (Radio %rowsorcols =rows
+                (VBox
+                  (HBox (Choice %rows "Rows") Fill)
+                  (Glue 5)
+                  (HBox (Choice %cols "Columns") Fill)
+                )
+              )
+              )
+            )
+            (Glue 5)
+            (HBox
+              Fill
+              (VBox
+                (Text (RightAlign TRUE) "Number:")
+                (Glue 5)
+                (Text (RightAlign TRUE) "Position:")
+              )
+              (Glue 5)
+              (Shape (Width 82)
+                (VBox
+                  (Numeric %number (Min 0))
+                  (Glue 5)
+                  (Numeric %pos (Min 0))
+                )
+              )
+              Fill
+            )
+            Fill
+          )
+          Fill
+          (Glue 5)
+          (VBox
+            Fill
+            (Button %upd "Update")
+            (Glue 5)
+            (Button %update 
+         
+                (VBox
+                  (HBox Fill (Text "Close &") Fill)
+                 
+                  (HBox Fill (Text "Update") Fill)
+                )
+              
+            )
+            (Glue 5)
+            (Button %discard
+             
+                (VBox
+                  (HBox Fill (Text "Close &") Fill)
+                 
+                  (HBox Fill (Text "Discard") Fill)
+                )
+              
+            )
+           
+          )
+          Fill
+        )
+        (Glue 5)
+        (Shape (Height 400) 
+          (Viewport %view
+            (VBox %records
+            )
+          )
+        )            
+      )  
+    )
+  )
+)
+)

@@ -1,0 +1,62 @@
+(Shape (Width 300)
+(Rim (Pen 10)
+  (Frame
+    (Rim (Pen 5)
+      (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+      (Font (Family "fixed") (PointSize 130) (WeightName "medium"))
+      (VBox
+        (Text (BgColor "Yellow") "New Graph")
+        (Glue 10)
+        (Radio %newgraphmethod
+          =fromscratch
+          (VBox
+            (Choice %fromscratch 
+              (Text (LeftAlign #TRUE) "From Scratch")
+            )
+            (Glue 5)
+            (Choice %fromfile
+              (Text (LeftAlign #TRUE) "From Data File:")
+            )
+            (Glue 5)
+            (HBox 
+              Fill 
+              (Shape (Width 150)
+                (DirMenu (For newfromfile))
+              )
+              Fill
+              (Boolean %suffix "*.dat")
+              Fill
+            )
+            (Glue 5)
+            (Shape (Height 155)
+              (Frame Lowered (BgColor "White")
+                (FileBrowser %newfromfile (ReadOnly #TRUE))
+              )
+            )
+            (Glue 5)
+            (Frame Lowered (BgColor "White")
+              (Helper (For newfromfile))
+            )
+            (Glue 5)
+            (HBox
+              Fill
+              (Boolean (Color "Red") %overcurrent 
+                (Text (Color "Black") "Overwrite Current")
+              )
+              Fill
+            )
+            (Glue 10)
+            (HBox
+              Fill
+              (Button %donew "Create")
+              Fill
+              (Button %cancelnew "Cancel")
+              Fill
+            )
+          ) 
+        )
+      )  
+    )
+  )
+)
+)

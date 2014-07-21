@@ -1,0 +1,23 @@
+(Shape (Width 300)
+(Rim (Pen 10)
+  (Frame
+    (Rim (Pen 5)
+      (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+      (Font (Family "fixed") (PointSize 130) (WeightName "medium"))
+      (VBox
+        (Text (BgColor "Yellow") "Edit Graph Formula")
+        (Glue 5)
+        (Shape (Height 47) (Frame Lowered (TextEdit (BgColor "White"))))
+        (Glue 5)
+        (HBox
+          Fill
+          (Button %replot "Replot")
+          Fill
+          (Button %cancel "Cancel")
+          Fill
+        )
+      )  
+    )
+  )
+)
+)

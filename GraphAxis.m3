@@ -1,0 +1,13 @@
+MODULE GraphAxis;
+
+REVEAL
+  Private = BRANDED "PRIVAXIS" OBJECT END;
+  T = Public BRANDED "PUBAXIS" OBJECT END;
+
+PROCEDURE New() :T =
+BEGIN
+  RETURN NEW(T);
+END New;
+
+BEGIN
+END GraphAxis.

@@ -1,0 +1,95 @@
+
+        (Shape 
+          (Rim (Pen 10)
+            (Frame
+              (Rim (Pen 5)
+                (LabelFont (Family "Times") (PointSize 140) (WeightName "medium"))
+                (Font (Family "fixed") (PointSize 130) (WeightName "medium"))
+                (VBox
+                  (VBox
+                    (HBox
+                      Fill
+                      (VBox
+                        (Text "Foundry")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %fontfoundry
+                              (Items "*" "adobe" "b&h" "bigelow & holmes" "bitstream" "cclib" "daewoo" "dec" "etl" "hku" "jis" "kaist" "misc" "schumacher" "sony" "sun")
+                            )
+                          )
+                        )
+                      )
+                      (Glue 5)
+                      (VBox
+                        (Text "Family")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %fontfamily
+                              (Items "*" "charter" "clean" "courier" "fixed" "gothic" "helvetica" "interim dm" "itc avant garde gothic" "itc lubalin graph" "itc souvenir" "lucida" "lucida bright" "lucidatypewriter" "menu" "mincho" "myeongjo" "new century schoolbook" "nil" "open look cursor" "open look glyph" "philgi" "present bullets" "song" "symbol" "terminal" "times")
+                            )
+                          )
+                        )
+                      )
+                      (Glue 5)
+                      (VBox
+                        (Text "Weight")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %fontweight
+                              (Items "*" "bold" "book" "delicate" "demi" "demibold" "light" "medium")
+                            )
+                          )
+                        )
+                      )
+                      Fill
+                    )
+                    (Glue 5)
+                    (HBox
+                      Fill 
+                      (VBox
+                        (Text "Slant")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %fontslant
+                              (Items "*" "i" "o" "r")
+                            )
+                          )
+                        )
+                      )
+                      (Glue 5)
+                      (VBox
+                        (Text "Size")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %fontpointsize
+                              (Items "*  " "20 " "50 " "60 " "70 " "80 " "90 " "100" "110" "120" "130" "140" "150" "160" "170" "180" "190" "200" "230" "240")
+                            )
+                          )
+                        )
+                      )
+                      (Glue 5)
+                      (VBox
+                        (Text "Width")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %fontwidth
+                              (Items "*" "double wide" "narrow" "normal" "semicondensed" "wide")
+                            )
+                          )
+                        )
+                      )
+                      Fill
+                    )
+                    (Glue 5)
+                    (Shape (Height 50)
+                      (Frame Lowered
+                        (Text %texttoset (BgColor "White") "")
+                      )
+                    )
+                  )
+                  Fill
+                )
+              )
+            )
+          )
+        )

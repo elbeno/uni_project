@@ -1,0 +1,55 @@
+(Shape (Width 300)
+(Rim (Pen 10)
+  (Frame
+    (Rim (Pen 5)
+      (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+      (VBox
+        (Text (BgColor "Yellow") "File Controls")
+        (Glue 10)
+        (HBox
+          Fill
+          (VBox
+            (Button %new "New")
+            (Glue 5)
+            (Button %load "Load")
+          )
+          Fill
+          (VBox
+            (Button %save "Save")
+            (Glue 5)
+            (Button %print "Print")
+          )
+          Fill
+          (VBox
+            (Button %close "Close")
+            (Glue 5)
+            (Guard (Button %quit (Color "Red") "Quit"))
+          )
+          Fill
+        )
+        (Glue 10)
+        (Text (BgColor "Yellow") "Graph Controls")
+        (Glue 10)
+        (HBox
+          Fill
+          (VBox
+            (Button %editdata "Edit Data")
+            (Glue 5)
+            (Button %editform "Edit Formula")
+            (Glue 5)
+            (Button %dispopts "Display Options")
+          )
+          Fill
+          (VBox
+            (Button %analyse "Analyse...")
+            (Glue 5)
+            (Button %type "Graph Type...")
+            Fill
+          )
+          Fill
+        )
+      )
+    )
+  )      
+)
+)

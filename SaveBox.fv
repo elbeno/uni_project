@@ -1,0 +1,48 @@
+(Shape (Width 300)
+  (Rim (Pen 10)
+    (Frame
+      (Rim (Pen 5)
+        (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+        (Font (Family "fixed") (PointSize 130))
+        (VBox
+          (ZMove (BgColor "Yellow") "Save Graph File")
+          (Glue 10)
+          (HBox 
+            Fill 
+            (Shape (Width 150)
+              (DirMenu (For savefile))
+            )
+            Fill
+          )
+          (Glue 5)
+          (Shape (Height 155)
+            (Frame Lowered (BgColor "White")
+              (FileBrowser %savefile)
+            )
+          )
+          (Glue 5)
+          (Frame Lowered (BgColor "White")
+            (Helper (For savefile))
+          )
+          (Glue 5)
+          (HBox
+            Fill
+            (Boolean (Color "Red") %overwritefile 
+              (Text (Color "Black") "Don't Backup Overwrites")
+            )
+            Fill
+          )
+          (Glue 10)
+          (HBox
+            Fill
+            (Button %load "Save")
+            Fill
+            (Button %cancel "Cancel")
+            Fill
+          )
+        )    
+      )
+    )
+  )
+)
+

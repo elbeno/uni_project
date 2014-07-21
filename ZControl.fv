@@ -1,0 +1,1000 @@
+(Shape
+
+  (Macro FontBox BOA (fontfoundry fontfamily fontweight fontslant fontsize fontwidth OKfont cancelfont)
+        `(Shape 
+          (Rim (Pen 10)
+            (Frame
+              (Rim (Pen 5)
+                (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+                (Font (Family "fixed") (PointSize 130) (WeightName "medium"))
+                (VBox
+                  (ZMove (BgColor "Yellow") "Set Font")
+                  (Glue 10)
+                  (VBox
+                    (HBox
+                      Fill
+                      (Glue 5)
+                      (VBox
+                        (Text "Family")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %,fontfamily
+                              (Items "courier" "helvetica" "times")
+                              (Value 0)
+                            )
+                          )
+                        )
+                      )
+                      (Glue 5)
+                      (VBox
+                        (Text "Weight")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %,fontweight
+                              (Items "bold" "medium")
+                              (Value 0)
+                            )
+                          )
+                        )
+                      )
+                      (Glue 5)
+                      Fill
+                    )
+                    (Glue 5)
+                    (HBox
+                      Fill 
+                      (VBox
+                        (Text "Slant")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %,fontslant
+                              (Items "italic" "normal")
+                              (Value 1)
+                            )
+                          )
+                        )
+                      )
+                      (Glue 5)
+                      (VBox
+                        (Text "Size")
+                        (Shape (Height 100) (Width 100)
+                          (Frame Lowered (BgColor "White")
+                            (Browser %,fontsize
+                              (Items "8" "9" "10" "11" "12" "14" "18" "24")
+                              (Value 4)
+                            )
+                          )
+                        )
+                      )
+                      (Glue 5)
+                      Fill
+                    )
+                    (Glue 5)
+                    (HBox
+                      Fill
+                      (CloseButton %,OKfont "OK")
+                      Fill
+                      (CloseButton %,cancelfont "Cancel")
+                      Fill
+                    )
+                  )
+                  Fill
+                )
+              )
+            )
+          )
+        )
+  )
+
+(ZSplit %main
+  (ZBackground
+    (ZChild %CPanel (Open TRUE)
+      (Filter %cpfilter
+        (Shape (Width 350) (Height 500)
+          (Rim (Pen 10)
+            (Frame
+              (Rim (Pen 5)
+                (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+                (Font (Family "fixed") (PointSize 130) (WeightName "medium"))
+                (VBox
+                  (Text (BgColor "Yellow") "File Controls")
+                  (Glue 10)
+                  (HBox
+                    Fill
+                    (VBox
+                      (Button %new "New")
+                      (Glue 5)
+                      (PopButton %loadbox (For fileload) "Load")
+                    )
+                    Fill
+                    (VBox
+                      (PopButton %savebox (For filesave) "Save")
+                      (Glue 5)
+                      (PopButton %printbox (For fileprint) "Print")
+                    )
+                    Fill
+                    (VBox
+                      (Button %close "Close")
+                      (Glue 5)
+                      (Guard (Button %quit (Color "Red") "Quit"))
+                    )
+                    Fill
+                  )
+                  (Glue 10)
+                  (Text (BgColor "Yellow") "Graph Controls")
+                  (Glue 10)
+                  (HBox
+                    Fill
+                    (VBox
+                      (Button %editdata "Edit Data")
+                      (Glue 5)
+                      (PopButton %editformula (For editform) "Edit Formula")
+                      (Glue 5)
+                      (Button %graphopts "Graph Options")
+                      (Glue 5)
+                      (Button %axisopts "Axis Options")
+                      (Glue 5)
+                      (Button %updategraph "Update Graph")
+                      Fill
+                    )
+                    Fill
+                    (VBox
+                      (Button %analyse "Analyse...")
+                      (Glue 5)
+                      (Shape (Height 60)
+                      (Frame Lowered (BgColor "White") 
+                        (Browser %routines)
+                      )
+                      )
+                      (Glue 5)
+                      (Button %analysisopts "Analysis Options")
+                      (Glue 5)
+                      (Button %displaygraph "Display Graph")
+                      (Glue 5)
+                      (Shape (Height 60)
+                      (Frame Lowered (BgColor "White")
+                        (Browser %graphtype)
+                      )
+                      )
+                      Fill
+                    )
+                    Fill
+                  )
+                  (Glue 300)
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %fileload
+    (Filter %loadboxfilter
+      (Shape (Width 300)
+        (Rim (Pen 10)
+          (Frame
+            (Rim (Pen 5)
+              (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+              (Font (Family "fixed") (PointSize 130))
+              (VBox
+                (ZMove (BgColor "Yellow") "Load Graph File")
+                (Glue 10)
+                (Shape (Height 155)
+                  (HBox
+                    Fill
+                    (VBox
+                      (HBox 
+                        Fill 
+                        (Shape (Width 150)
+                          (DirMenu (For loadbrowser))
+                        )
+                        Fill
+                      )
+                      (Glue 5)
+                      (Shape (Width 180)
+                        (Frame Lowered (BgColor "White")
+                          (FileBrowser %loadbrowser (ReadOnly TRUE))
+                        )
+                      )
+                    )
+                    Fill
+                    (Radio %loadsuffix =loadall
+                      (VBox
+                        Fill
+                        (Choice %loaddata "*.dat")
+                        (Choice %loadgraph "*.grp")
+                        (Choice %loadall "*.*")
+                        Fill
+                        (Button %load "Load")
+                        Fill
+                        (CloseButton %loadcancel "Cancel")
+                        Fill
+                      )
+                    )                  
+                    Fill
+                  )
+                )
+                (Glue 5)
+                (Frame Lowered (BgColor "White")
+                  (Helper (For loadbrowser))
+                )
+                (Glue 10)
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %filesave
+    (Filter %saveboxfilter
+      (Shape (Width 300)
+        (Rim (Pen 10)
+          (Frame
+            (Rim (Pen 5)
+              (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+              (Font (Family "fixed") (PointSize 130))
+              (VBox
+                (ZMove (BgColor "Yellow") "Save Graph File")
+                (Glue 10)
+                (HBox
+                  Fill
+                  (Boolean %backupfile (Value TRUE) "Backup Overwrites")
+                  Fill
+                )
+                (Glue 5)
+                (Shape (Height 155)
+                  (HBox
+                    Fill
+                    (VBox
+                      (HBox 
+                        Fill 
+                        (Shape (Width 150)
+                          (DirMenu (For savebrowser))
+                        )
+                        Fill
+                      )
+                      (Glue 5)
+                      (Shape (Width 180)
+                        (Frame Lowered (BgColor "White")
+                          (FileBrowser %savebrowser)
+                        )
+                      )
+                    )
+                    Fill
+                    (VBox
+                      Fill
+                      (Button %save "Save")
+                      Fill
+                      (CloseButton %savecancel "Cancel")
+                      Fill
+                    )                  
+                    Fill 
+                  )
+                )
+                (Glue 5)
+                (Frame Lowered (BgColor "White")
+                  (Helper (For savebrowser))
+                )
+                (Glue 10)  
+              )    
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %fileprint
+    (Filter %printboxfilter
+      (Shape (Width 300)
+        (Rim (Pen 10)
+          (Frame
+            (Rim (Pen 5)
+              (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+              (Font (Family "fixed") (PointSize 130))
+              (VBox
+                (ZMove (BgColor "Yellow") "Print Graph to File")
+                (Glue 10)
+                (Shape (Height 155)
+                  (HBox
+                    Fill
+                    (VBox
+                      (HBox 
+                        Fill 
+                        (Shape (Width 150)
+                          (DirMenu (For printbrowser))
+                        )
+                        Fill
+                      )
+                      (Glue 5)
+                      (Shape (Width 180)
+                        (Frame Lowered (BgColor "White")
+                          (FileBrowser %printbrowser)
+                        )
+                      )
+                    )
+                    Fill
+                    (VBox
+                      Fill
+                      (Button %print "Print")
+                      Fill
+                      (CloseButton %printcancel "Cancel")
+                      Fill
+                    )
+                    Fill 
+                  )
+                )
+                (Glue 5)
+                (Frame Lowered (BgColor "White")
+                  (Helper (For printbrowser))
+                )
+                (Glue 10)  
+              )    
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %graphoptions1
+    (Filter %graphoptsfilter1
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (ZMove (BgColor "Yellow") "Graph Options")
+              (Glue 10)
+              (HBox
+                Fill
+                (Text "Height (Pixels):")
+                Fill
+                (Numeric %vertsize1 (Min 500) (Value 500))
+                Fill
+              ) 
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Width (Pixels):")
+                Fill
+                (Numeric %horizsize1 (Min 500) (Value 500))
+                Fill
+              ) 
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Border (Pixels):")
+                Fill
+                (Numeric %border1 (Min 50))
+                Fill
+              ) 
+              (Glue 5)
+              (Radio %showplot1 =showexact1
+                (VBox
+                  (Choice %showexact1 "Show Exact Plot")
+                  (Glue 5)
+                  (Choice %showapprox1 "Show Approximation")
+                  (Glue 5)
+                  (HBox 
+                    Fill
+                    (Text "Sample Points:")
+                    Fill
+                    (Numeric %approxpoints1 (Min 20))
+                    Fill
+                  )
+                )
+              )
+              (Glue 5)             
+              (Boolean %showmarkers1 "Show Point Markers")
+              (Glue 5)
+              (Boolean %showgrid1 "Show Grid")
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Grid Spacing:")
+                Fill
+                (Numeric %gridspace1 (Min 10) (Value 20))
+                Fill
+              )
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Title:")
+                Fill
+                (Frame Lowered (BgColor "White") (TypeIn %graphtitle1))
+                Fill
+              )                               
+              (Glue 5)
+              (HBox
+                Fill
+                (PopButton %settitlefont1 (For choosetitlefont1) "Title Font")
+                Fill
+                (PopButton %setnotesfont1 (For choosenotesfont1) "Notes Font")
+                Fill
+              )                       
+              (Glue 5)
+              (HBox
+                Fill
+                (Button %updategraphopts1 "Update")
+                Fill
+                (CloseButton %cancelnowgraphopts1 
+                  (VBox
+                    (HBox Fill (Text "Close &") Fill)
+                    (HBox Fill (Text "Update") Fill)
+                  )
+                )
+                Fill
+                (CloseButton %cancellatergraphopts1 
+                  (VBox
+                    (HBox Fill (Text "Close &") Fill)
+                    (HBox Fill (Text "Update Later") Fill)
+                  )
+                )
+                Fill
+              )             
+            )
+          )
+        )
+      )
+    )
+    )
+  )
+
+  (ZChild %axisoptions1
+    (Filter %axisoptsfilter1
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (ZMove (BgColor "Yellow") "Axis Options")
+              (Glue 10)
+              (HBox
+                Fill
+                (Text "Axis:")
+                Fill
+                (Radio %axischoice1 =horizaxis1
+                  (VBox
+                    (Choice %horizaxis1 "Ordinate")
+                    (Glue 5)
+                    (Choice %vertaxis1 "Abcissa")
+                  )
+                )
+                Fill
+              )
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Data Field Mapping:")
+                Fill
+                (Numeric %maptocol1 (Min 0))
+                Fill
+              ) 
+              (Glue 5)
+              (Boolean %showaxis1 (Value TRUE) "Show Axis")
+              (Glue 5)
+              (Boolean %showticks1 (Value TRUE) "Show Ticks")
+              (Glue 5)
+              (Boolean %showlabels1 (Value TRUE) "Show Labels")
+              (Glue 5)
+              (Boolean %reverseticks1 (Value FALSE) "Reverse Side Ticks")
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Tick Size:")
+                Fill
+                (Numeric %ticksize1 (Min 0) (Value 10))
+                Fill
+              )                               
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Tick Spacing:")
+                Fill
+                (Numeric %tickspace1 (Min 0) (Value 50))
+                Fill
+              )                               
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Legend:")
+                Fill
+                (Frame Lowered (BgColor "White") (TypeIn %legend1))
+                Fill
+              )                               
+              (Glue 5)
+              (HBox
+                Fill
+                (PopButton %setlabelfont1 (For chooselabelfont1) "Label Font")
+                Fill
+                (PopButton %setlegendfont1 (For chooselegendfont1) "Legend Font")
+                Fill
+              )                               
+              (Glue 5)
+              (HBox
+                Fill
+                (Button %updateaxisopts1 "Update")
+                Fill
+                (CloseButton %cancelnowaxisopts1 
+                  (VBox
+                    (HBox Fill (Text "Close &") Fill)
+                    (HBox Fill (Text "Update") Fill)
+                  )
+                )
+                Fill
+                (CloseButton %cancellateraxisopts1 
+                  (VBox
+                    (HBox Fill (Text "Close &") Fill)
+                    (HBox Fill (Text "Update Later") Fill)
+                  )
+                )
+                Fill
+              )
+            )
+          )
+        )
+      )
+    )
+    )
+  )
+
+  (ZChild %choosetitlefont1
+    (FontBox titlefoundry1 titlefamily1 titleweight1 titleslant1 titlesize1 titlewidth1 OKtitlefont1 canceltitlefont1)
+  )
+
+  (ZChild %chooselabelfont1
+    (FontBox labelfoundry1 labelfamily1 labelweight1 labelslant1 labelsize1 labelwidth1 OKlabelfont1 cancellabelfont1)
+  )
+
+  (ZChild %choosenotesfont1
+    (FontBox notesfoundry1 notesfamily1 notesweight1 notesslant1 notessize1 noteswidth1 OKnotesfont1 cancelnotesfont1)
+  )
+
+  (ZChild %chooselegendfont1
+    (FontBox legendfoundry1 legendfamily1 legendweight1 legendslant1 legendsize1 legendwidth1 OKlegendfont1 cancellegendfont1)
+  )
+
+  (ZChild %interpolopts1
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (ZMove (BgColor "Yellow") "Interpolation Options")
+              (Glue 10)
+              (HBox
+                Fill
+                (Text (RightAlign TRUE) "Interpolate at abscissa = ")
+                (Frame Lowered (TypeIn %interpxvalue1 (BgColor "White")))
+                Fill
+              )
+              (Glue 5)
+              (Radio %interpchoice1 =lagrange1
+                (VBox
+                  (Choice %useformula1 "Use Formula")
+                  (Glue 5)
+                  (Choice %lagrange1 "Lagrange Polynomial")
+                  (Glue 5)
+                  (Choice %newtondivdiff1 "Newton Divided Differences")
+                  (Glue 5)
+                  (Choice %rational1 "Rational Polynomial")
+                  (Glue 5)
+                  (Choice %cubicspline1 "Natural Cubic Spline")
+                  (Glue 5)
+                  (Bar)
+                  (Glue 5)
+                  (Choice %leastsquares1 "Least Squares Fit")
+                  (Glue 5)
+                  (HBox
+                    (Glue 20)
+                    (VBox
+                      (HBox
+                        Fill
+                        (Text "order:")
+                        Fill
+                        (Numeric %lsorder1 (Min 0) (Max 10))
+                        Fill
+                      )
+                      (Glue 5)
+                      (HBox
+                        Fill
+                        (Text "accuracy:")
+                        Fill
+                        (Shape (Width 100)
+                          (Frame Lowered (TypeIn %lsaccuracy1 (BgColor "White")))
+                        )
+                        Fill
+                      )
+                      (Glue 5)
+                      (Radio %basisfunctions1 =polybasis1
+                        (VBox
+                          (Choice %polybasis1 "General polynomials")
+                          (Glue 5)
+                          (Choice %legbasis1 "Legendre polynomials")
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+              (Glue 5)
+              (Bar)
+              (Glue 5)
+              (Boolean %interpolmakegraph1 "Make New Graph")
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Sample Points:")
+                Fill
+                (Numeric %interpsample1 (Min 20))
+                Fill
+              )
+              (Glue 5)
+              (HBox
+                Fill
+                (CloseButton %okinterpolopts1 "OK")
+                Fill
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %diffopts1
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (ZMove (BgColor "Yellow") "Differentiation Options")
+              (Glue 10)
+              (HBox
+                (Text (RightAlign TRUE) "Differentiate at abscissa = ")
+                (Frame Lowered (TypeIn %diffxvalue1 (BgColor "White")))
+              )
+              (Glue 5)
+              (HBox
+                (Text (RightAlign TRUE) "Parameter (h) = ")
+                (Frame Lowered (TypeIn %diffhvalue1 (BgColor "White")))
+              )
+              (Glue 5)
+              (HBox Fill (Text "Method:") Fill)
+              (Glue 5)
+              (Radio %diffmethod1 =central1
+                (VBox
+                  (Choice %forward1 "Forward Difference")
+                  (Glue 5)
+                  (Choice %backward1 "Backward Difference")
+                  (Glue 5)
+                  (Choice %central1 "Central Difference")
+                  (Glue 5)
+                  (Bar)
+                  (Glue 5)
+                  (Choice %richardson1 "Richardson Extrapolation")
+                  (Glue 5)
+                  (HBox
+                    Fill
+                    (Text "Refinements:")
+                    Fill
+                    (Numeric %richarditer1 (Min 3) (Max 10))
+                    Fill
+                  )
+                )
+              )
+              (Glue 5)
+              (Bar)
+              (Glue 5)
+              (Boolean %diffmakegraph1 "Make New Graph")
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Sample Points:")
+                Fill
+                (Numeric %diffsample1 (Min 20))
+                Fill
+              )
+              (Glue 5)
+              (HBox
+                Fill
+                (CloseButton %okdiffopts1 "OK")
+                Fill
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %rootfindopts1
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (ZMove (BgColor "Yellow") "Root Finding Options")
+              (Glue 10)
+              (HBox
+                (VBox
+                  (HBox Fill (Text "Find Root between:"))
+                  (Glue 5)
+                  (HBox Fill (Text "and:"))
+                )
+                (VBox
+                  (Frame Lowered (TypeIn %rootx1value1 (BgColor "White")))
+                  (Glue 5)
+                  (Frame Lowered (TypeIn %rootx2value1 (BgColor "White")))
+                )
+              )
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Fractional Accuracy:")
+                Fill
+                (Frame Lowered (TypeIn %rootaccuracy1 (BgColor "White")))
+                Fill
+              )
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Max No. of Iterations:")
+                Fill
+                (Numeric %rootiter1 (Min 1) (Value 40))
+                Fill
+              )
+              (Glue 5)
+              (HBox Fill (Text "Method:") Fill)
+              (Glue 5)
+              (Radio %rootmethod1 =bisection1
+                (VBox
+                  (Choice %bisection1 "Bisection Method")
+                  (Glue 5)
+                  (Choice %newtonraphson1 "Newton Raphson")
+                  (Glue 5)
+                  (Choice %secant1 "Secant Method")
+                  (Glue 5)
+                  (Choice %falsepos1 "False Position")
+                  (Glue 5)
+                  (Choice %brent1 "Brent's Method")
+                )
+              )
+              (Glue 5)
+              (HBox
+                Fill
+                (CloseButton %okrootfindopts1 "OK")
+                Fill
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %integrateopts1
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (ZMove (BgColor "Yellow") "Quadrature Options")
+              (Glue 10)
+              (HBox 
+                Fill
+                (VBox 
+                  (Text "Lower limit:")
+                  (Glue 5)
+                  (Text "Upper limit:")
+                )
+                Fill
+                (VBox
+                  (Frame Lowered (TypeIn %lowerquadlimit1 (BgColor "White")))
+                  (Glue 5)
+                  (Frame Lowered (TypeIn %upperquadlimit1 (BgColor "White")))
+                )
+                Fill
+              )
+              (Glue 5)
+              (Bar)
+              (Glue 5)
+              (Radio %integmethod1 =rectangle1
+                (VBox
+                  (HBox
+                    Fill
+                    (Text "No. of steps:")
+                    Fill
+                    (Numeric %quadstep1 (Value 20) (Min 1))
+                    Fill
+                  )
+                  (Glue 5)
+                  (Choice %rectangle1 "Rectangle Rule")
+                  (Glue 5)
+                  (Choice %midpoint1 "Midpoint Rule")
+                  (Glue 5)
+                  (Bar)
+                  (Glue 5)
+                  (HBox
+                    Fill
+                    (Text "Fractional Accuracy:")
+                    Fill
+                    (Frame Lowered (TypeIn %quadaccuracy1 (BgColor "White")))
+                    Fill
+                  )
+                  (Glue 5)
+                  (HBox
+                    Fill
+                    (Text "Max No. of Iterations:")
+                    Fill
+                    (Numeric %quaditer1 (Min 1) (Value 20))
+                    Fill
+                  )                  
+                  (Glue 5)
+                  (Choice %trapezium1 "Trapezium Rule")
+                  (Glue 5)
+                  (Choice %simpson1 "Simpson's Rule")
+                  (Glue 5)
+                  (Choice %romberg1 
+                    (HBox
+                      Fill
+                      (Text "Romberg:")
+                      Fill
+                      (Text "order")
+                      (Numeric %rombergorder1 (Min 2) (Max 10))
+                      Fill
+                    )
+                  )
+                  (Glue 5)
+                  (Bar)
+                  (Glue 5)
+                  (HBox
+                    Fill
+                    (Text "Gaussian Rules:")
+                    Fill
+                    (Text "order")
+                    (Numeric %gaussorder1 (Min 1) (Value 5))
+                    Fill
+                  )
+                  (Glue 5)
+                  (Choice %gaussleg1 "Gauss-Legendre")
+                  (Glue 5)
+                  (Choice %gausscheb1 "Gauss-Chebyshev")
+                )
+              )
+              (Glue 5)
+              (Bar)
+              (Glue 5)
+              (Boolean %integmakegraph1 "Make New Graph")
+              (Glue 5)
+              (HBox
+                Fill
+                (Text "Sample Points:")
+                Fill
+                (Numeric %integsample1 (Min 20))
+                Fill
+              )
+              (Glue 5)
+              (HBox
+                Fill
+                (CloseButton %okintegrateopts1 "OK")
+                Fill
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %editform
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (ZMove (BgColor "Yellow") "Edit Graph Formula")
+              (Glue 10)
+              (HBox Fill (Text "Variable Declarations") Fill)
+              (Glue 5)
+              (Shape (Height 47) (Frame Lowered (TextEdit %formtext1 (BgColor "White"))))
+              (Glue 5)
+              (HBox Fill (Text "Graph Formula") Fill)
+              (Glue 5)
+              (Shape (Height 47) (Frame Lowered (TextEdit %formtext2 (BgColor "White"))))
+              (Glue 5)
+              (HBox
+                Fill
+                (Button %updateformula "Update")
+                Fill
+                (CloseButton %cancelnowformula 
+                  (VBox
+                    (HBox Fill (Text "Close &") Fill)
+                    (HBox Fill (Text "Update") Fill)
+                  )
+                )
+                Fill
+                (CloseButton %cancellaterformula 
+                  (VBox
+                    (HBox Fill (Text "Close &") Fill)
+                    (HBox Fill (Text "Update Later") Fill)
+                  )
+                )
+                Fill
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %alertbox
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (HBox Fill (Text %alerttext1 "Dummy 1") Fill)
+              (HBox Fill (Text %alerttext2 "Dummy 2") Fill)
+              (Glue 5)
+              (HBox
+                Fill
+                (CloseButton %alertOK "OK")
+                Fill
+                (CloseButton %alertcancel "Cancel")
+                Fill
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (ZChild %modalalertbox
+    (Shape (Width 300)
+      (Rim (Pen 10)
+        (Frame
+          (Rim (Pen 5)
+            (LabelFont (Family "Times") (PointSize 180) (WeightName "medium"))
+            (Font (Family "fixed") (PointSize 130))
+            (VBox
+              (HBox Fill (Text %modalalerttext1 "Dummy 1") Fill)
+              (HBox Fill (Text %modalalerttext2 "Dummy 2") Fill)
+              (Glue 5)
+              (HBox
+                Fill
+                (CloseButton %modalalertOK "OK")
+                Fill
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+)
+)

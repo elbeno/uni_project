@@ -1,0 +1,1 @@
+MODULE NoteList = List(Note) END NoteList.
