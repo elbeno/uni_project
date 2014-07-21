@@ -1,0 +1,64 @@
+Introduction
+
+Motivation for the project.
+
+A common application in scientific computing is use of the computer
+for tabulation of data and results obtained by experiment. Such
+results are often presented in the form of a graph. Showing data by
+using a graph has two major advantages: it is easy to see
+relationships linking experimental quantities, and any experimental
+anomalies show up more easily. Therefore the aim of this project is to
+create a tool which displays arbitrary or experimental data in the
+form of a graph. Plotting the graph and manipulating the data should
+be interactive, easy to do, and should happen in real time on the
+screen for maximum understanding. Having plotted a graph of
+experimental data, one may wish to find the formal relationship
+linking the graph points, or to compare the results obtained against a
+standard known curve. It is also desirable to be able to identify
+salient features of the graph, and to know such things as the area
+contained under the graph. Therefore the project should provide
+support for plotting graphs from data in a natural way, and analysing
+the graph in certain ways mathematically.
+
+Computer Science areas covered and technical background.
+
+The project addresses three main areas of Computer Science: user
+interface design, numerical analysis, and a limited amount of
+graphics. The user interface must support the activity of plotting and
+analysing graphs. Typically the sorts of analysis one wishes to
+perform on graphs includes curve fitting, interpolation and
+extrapolation of data points, and finding the gradient or the area
+underneath the graph. Various numerical analysis techniques can be
+usefully applied to achieve these aims. Obviously the area of computer
+graphics, and specifically the use of a coordinate graphics system, is
+involved in actually producing a graph to be displayed on screen.
+
+Related programs.
+
+Gnuplot is a well known command-line driven interactive plotting
+program which runs under unix. It concentrates on plotting functions,
+but also has support for plotting data to be compared to given
+functions. Gnuplot will plots 2D and 3D graphs, and functions can be
+built from C operators and library functions. It also has support for
+user defined functions and constants. It has several features and
+options such as axis labelling and scaling, and support for file
+operations. All computations performed by Gnuplot are done in the
+complex domain.
+
+Graph(1) is a standard unix command which when given no options will
+read in pairs of numbers from stdin, treating them as abscissae and
+ordinates for a cartesian graph. It has no support for plotting
+functions but only handles data, and joins plotted points on the graph
+with straight lines. There is some support for different options: the
+axes can be logarithmic, a grid can be overlayed on the graph, and
+individual points may be labelled.
+
+Reduce is a system for carrying out algebraic manipulations. It
+addresses a different area from this project but is worth considering
+so as to define what this project does not attempt to do. This project
+concentrates on numerical aspects and has no support for symbolic
+algebraic operations such as symbolic differentiation.
+
+
+
+

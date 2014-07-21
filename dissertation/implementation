@@ -1,0 +1,892 @@
+Implementation (* denotes implementation not finished yet)
+
+
+0. Top Level
+============ 
+a. Object Hierarchy 
+b. Multiple graphs at once
+
+Here a 'graph' is the object (Graph.T) encapsulating the raw data, the
+control panel and the actual displayed graph. Each graph is a separate
+object which has a number associated with it, this number being the
+number of graphs already installed (including itself) when it gets
+created. So the first graph is number 1, the second number 2, etc. Any
+graph can be closed individually, but likewise hitting the 'Quit'
+button on any graph ends the program. The main module, after
+installing one graph, waits on a condition. This condition is
+signalled when the last graph is closed and the graph count reaches
+zero, or when the 'Quit' button is hit on any graph. This causes the
+program to end.
+
+1. User Interface
+=================
+a. Prototyping with Formsedit
+
+One of the first stages of implementation was to design the user
+interface, which was easily prototyped using formsedit. The initial
+layout of the Control Panel was quickly designed, and owing to the
+ease of using FormsVBT there was plenty of room for refinement to be
+made within the basic framework. The Control Panel was designed in a
+top-down way, separating graph operations from other operations, then
+splitting graph operations into operations to display the graph, edit
+the data, and analyse the graph, and then further splitting these
+areas. The whole of the Control Panel was implemented as a ZSplit
+object to provide support for subwindows. A ZSplit alertbox was also
+implemented early on as a way of supporting error messages. When the
+sections of code were refined and written later on it was easy to use
+this alertbox which was already present in the Control Panel
+description.
+
+b. UI structure => program structure
+
+The structure of the program and the object hierarchy follows very
+closely the layout of the user interface, in particular the Control
+Panel. The buttons on the control panel for the most part correspond
+to methods of the Graph.T object, such as loading, saving, applying
+the formula, and performing numerical analysis routines. The Control
+Panel is the top level of the graph, and is split into two logical
+sections: filing and utility operations (load, save, new graph, print,
+close and quit) and operations on graphs (editing the data, displaying
+the graph, performing numerical analysis etc).
+
+c. Control Panel
+
+   1. Consistency in design
+
+From the beginning a consistent design strategy was adopted. Since
+FormsVBT buttons have a 3D effect, all other elements of the user
+interface also conform to a standardised 3D effect. The main colour
+used throughout the user interface is grey. All main windows and
+subwindows are set on raised panels, and all TypeIn and TextEdit VBTs
+are white and are set in a lowered frame. In the case of options to
+the numerical analysis routines, distinct areas are separated by
+horizontal bars to enable the logical structure of the form to be
+easily understood. When popping up a subwindow, such as for loading or
+saving, the underlying form is made dormant and appears greyed out.
+
+   2. Attaching callbacks
+
+The callback procedures for the buttons on the Control Panel (and in
+the Data Editor window) were easily attached. Because of the ease of
+designing the form using the formsedit program, it was simply a matter
+of writing a procedure with the correct type (FormsVBT.Proc) and
+attaching it to the appropriate named VBT, usually a button. In the
+case of opening and closing subwindows, as well as the particular
+buttons being specified as PopButtons and CloseButtons in the Control
+Panel description file, they were attached to callback procedures to
+handle the reactivity of the panel (i.e. make the underlying panel
+dormant when popping up, and re-activate it when closing).
+
+   3. Takes time - fiddly
+   4. Plug in graph types
+
+An early problem in design and implementation was how to provide
+support for a potentially infinite variety of graph types (2D, 3D, bar
+charts, pie charts etc). All graph types have a number of basic
+properties in common, but each graph type also has its own specific
+options and properties. See section 4 for a fuller explanation of
+graphical properties of graphs. The Control Panel has two buttons:
+'Graph Options' and 'Axis Options' which pop up windows of options on
+the current graph. These options will be different for each graph type
+however. This problem was solved by having a master list of graph
+types which is initially built by the main module. The graph types
+browser on the Control Panel is then built from this master list, and
+when a graph type is selected from the browser, it is looked up in the
+list. The list entry for that graph type specifies the names of the
+VBTs which will be popped up by the two 'Options' buttons. This
+achieves a level of abstraction in the Control Panel which is
+independent of the graph type, and makes it easy to add new graph
+types by specifying the two subwindows for the graph options. Since
+some graphs vary in a few significant ways this could be done by
+copying an existing subwindow description and modifying it as
+necessary.
+
+2. Data Handling
+================
+a. Representation of data
+
+The DataEdit.T is a derived type (from FormsVBT.T) which represents
+the Data Editor window. The window consists of a table of cells
+(TypeInVBTs) holding the text of the data values. The numeric values
+themselves are stored in a Data.T. The DataEdit.T also has a flag
+indicating whether the window is visible. In addition to an
+initialisation method, it has methods to add and remove rows and
+columns of data cells in the window. It also has two other methods:
+DataToCells, which fills the table of cells with the values stored in
+the Data.T, and CellstoData which performs the reverse function.
+
+b. Type independence (Data.Element, ScanEl, FmtEl)
+
+The Data.T is implemented as a pointer to an array of Data.Element,
+where Data.Element is the LONGREAL type renamed. Since many interfaces
+and modules import Data.i3, to preserve modularity, two often-needed
+procedures to convert between text and numeric values were included in
+the Data interface (Data.ScanEl and Data.FmtEl). This means that if it
+was decided that the individual data elements should not be of type
+LONGREAL but of some other floating point type, the only changes
+necessary would be to the Data interface and module, and it would not
+be necessary to search for many occurrences of type-specific code
+through several modules.
+
+c. Relationship between internal data and editor window
+
+When the Data Editor window is first installed, the table of data
+cells is initialised with the data values contained in the
+Data.T. Subsequently the values within the data cells may be
+edited. The 'Update' button causes the data which has been edited in
+the cells to be copied to the Data.T (the CellsToData
+method). Similarly the 'Close and Update' button does the same, and
+closes the Data Editor window. The 'Close and Discard' button merely
+closes the window without moving the edited data to the Data.T, and
+therefore the next time that the window is installed, the table of
+cells is re-initialised from the (unchanged) Data.T.
+
+d. Adding and removing rows and columns
+
+It is essential to be able to add and remove points when editing data,
+since the entire set of data is used to plot the graph. Likewise it
+may be useful to tabulate data in several columns and to examine the
+effects of plotting successive data columns against one column. The
+mechanism for adding and removing rows or columns is very simple: the
+number of rows (or columns) to add is specified, and the position to
+add them at (they are always inserted before the cell at that
+position, so that rows added at position 0 end up at the top of the
+table). If the position specified is beyond the end of the table, the
+rows are simply added at the end.
+
+e. Problems - inserting cells (VBT hierarchy)
+
+The structure of the cell table is thus (in the FormsVBT language):
+
+  (Viewport
+    (VBox %records))
+
+The individual records (rows in the table) are inserted into the
+"records" VBox when needed, and initially are empty HBoxes (named
+"fieldsX" where X is the record number). The individual cells holding
+the items of data are then inserted into the HBoxes. This structure
+naturally models the 'fields within records' idea, and since each HBox
+is indexed by its corresponding record number in the Data.T, inserting
+the data items is easily achieved. Adding and removing columns of data
+under this scheme is slightly more complicated than adding and
+removing rows , but not overly so, and in practice it is far more
+likely that the number of columns will be fixed from the start,
+whereas one will frequently want to add new data points (rows).
+
+In order to achieve the proper spacing between cells, the structure of
+a cell is:
+
+(Shape ... 
+  (Rim (Pen 5) ... 
+    (Frame Lowered 
+      (TypeIn ... )))) 
+
+When each individual cell is instantiated, it is given the VBT name
+"cellX_Y" where X and Y are the record number and field number (row
+and column) of the cell's position in the table. Since VBT names are
+visible from the top level of the form, any individual cell can be
+accessed, using its unique name, to get or set the value within
+it. Unfortunately there is a minor complication, but one which is
+easily overcome: because of the structure of the cell, several calls
+to Filter.Child are necessary to extract the actual TypeIn VBT from
+the Shape VBT, in order to get and set its value.
+
+3. Filing
+=========
+a. Loading and saving raw data
+
+The structure of the data file is very simple. When saving, the
+elements of the Data.T are written to the file with one row of the
+table corresponding to one line of the file, and the column values
+being separated by spaces on that line. It is usual to end data files
+with an extension of .dat and graph files with an extension of .grp,
+although this is not essential: if no extension is specified then a
+data file will be assumed. In practice data files will be used most
+often. When loading a data file, the same applies. In order to know
+how big the data file is, the Load procedure counts the number of
+items on the first line (the number of columns in the Data.T) and then
+counts the number of lines in the file.
+
+b. Loading and saving graphs *
+c. Error Messages
+
+Errors are propagated from the Load and Save procedures back to the
+Control Panel and alertboxes pop up when errors occur. There are three
+possible errors: an error opening the file (which is returned as "Bad
+Filename"), a miscellaneous file error (which is returned as "File
+Error"), and an error owing to the wrong data format in the file ("Bad
+Format"). In the case of saving a file, the "Bad Format" error will
+not occur.
+
+4. Graphics Engine
+==================
+a. Plug in graph types - structure
+
+The basic displayable graph, a DisplayGraph.T, is a derived object
+which is a child of VBT.Leaf. It is held as a component of the
+Graph.T. There are potentially a large number of different types of
+graphs (see section 1c.4) but they all can be thought of as having a
+number of distinct elements in common. At the most basic level are the
+physical attributes specifying the size of the graph on the
+screen. Abstracting further, a graph in general consists of four
+things: lines, points, regions and text. In the specification of the
+DisplayGraph.T these categories are further broken down (see section
+4c), to encompass different parts of the graph which may be
+altered. In addition to these standard components the DisplayGraph.T
+holds a pointer (a REFANY) to a graph options block, which is
+specifically tailored to individual graph types. When a new
+DisplayGraph.T is created, the specific graph type (specified on the
+Control Panel) is looked up in the master list. The list entry
+provides: an initialisation procedure, callback procedures and VBT
+names to attach them to (see section 1c.4 for an explanation of how
+the Control Panel deals with specific graph options), a list of
+numerical analysis routines specific to the graph type, and a
+procedure that will return the graph options block. All of these are
+specific to the graph type. Once attached and instantiated in this
+way, the implementation details of the underlying graph type are
+transparent to the calling mechanisms (i.e. the Control Panel).
+
+b. Graph options block
+
+The graph options block is graph-type specific. The options block for
+a Cartesian X-Y graph contains various flags and options, structured
+in the following way:
+
+OptBlock = REF RECORD
+           a :Axis.T := Axis.T.Hor;       (* used in mapping fields to axes *)
+           title :TEXT := "";             (* the title of the graph *)
+           showplot :BOOLEAN := TRUE;     (* plot exact data/approximation *)
+           showmarkers :BOOLEAN := FALSE; (* show the point markers *)
+           showgrid :BOOLEAN := FALSE;    (* show grid overlaid on the graph *)
+           gridspacing :INTEGER := 1;     (* grid option *)
+           axes :ARRAY Axis.T OF CAxis;   (* options parametric on axes *)
+           END;
+
+Some options apply to each axis of the graph individually - the
+options controlling how ticks and labels are shown, and which field of
+the Data.T is mapped to which axis.
+
+c. Paths, Regions, Text *
+
+The DisplayGraph.T overrides the Repaint method of the VBT.Leaf object
+which it is derived from, and contains separate Path.T objects holding
+information for the graph axes, the axis ticks, the grid which may be
+overlaid, and the curve itself. Similarly, it also has a list of
+regions to be painted (together with information on how to paint
+them), a list of points to be drawn (should the 'point markers' option
+be turned on) and lists holding information about the labels and
+pieces of text (of type Note.T) on the graph. Since the specific
+initialisation procedure for the relevant graph type has already
+instantiated the paths, regions and text to be drawn at this stage,
+the Repaint method merely involves several calls to VBT.Stroke to
+render the paths, and similar calls in order to render the regions,
+the point markers and the text.
+
+The mouse method of the VBT.Leaf object is overridden to allow text to
+be dragged around on the graph. When the mouse is clicked on the
+graph, the Mouse method scans through the list of text objects
+(Note.T) to determine whether the mouse was clicked within the
+bounding box of one. If so, the text can be dragged while the mouse is
+held down. If the mouse is released before moving, it selects (or
+deselects) the text (selected text is shown with a box painted around
+it). While dragging the text, it is painted using PaintOp.Swap to XOR
+the values so that it restores whatever is underneath
+automatically. Once dropped, the text is painted permanently. If
+subsequently moved, the region it previously occupied is added to the
+VBT's set of 'bad regions', and is repaired when the text is
+dropped again.
+
+d. Init routine for Cartesian X-Y Graph
+
+Having laid the foundation for specific graph types, the project was
+to concentrate on Cartesian X-Y graphs. There were several problems
+and subtleties in initialising the graph properly from the given data.
+
+   1. Computing axis zero points - special case problems
+                                   if not on screen
+
+The graph is constrained by size in two dimensions on the screen, and
+a graph border is also specified (a blank area around the graph which
+is used for text such as the graph title). This means that the graph
+must be scaled by the right amount, and the first thing that is done
+is to find the maximum and minimum values in both the X and the Y
+directions. Having found these, the axes are scaled simply by the
+formula:
+
+(notation: St = total size of graph area
+           Sb = border size)
+
+scale = (St - 2*Sb) / (max-min)
+
+In order to find the origin, two cases are considered separately for
+each dimension:
+
+when the maximum and minimum are both positive, or the zero lies
+between the maximum and minimum:
+origin = Sb - (St - 2*Sb) * min / (max-min)
+
+when the maximum and minimum are both negative:
+origin = (St - Sb) - (St - 2*Sb) * max / (max-min)
+
+If the zero point does not lie between the maximum and minimum values
+in a particular dimension, then the axis will not appear on
+screen. This problem is solved by shifting the appropriate coordinate
+of the axis so that it does appear on the screen, although of course
+the axes do not then appear to intersect at the origin. The axes are
+moved to the nearest screen edge that they fall beyond, so as to
+appear in the correct position relative to the curve.
+
+   2. Mapping data columns to axes
+
+It is desirable to have flexibility when plotting graphs, and
+particularly in the case of mapping the axis values to columns in the
+Data.T. The mapping information for each axis is held in the graph
+options block, as part of the axis information array (it is stored as
+an integer corresponding to the column). The 'Axis Options' subwindow
+on the Control Panel is used to change the options for each axis
+individually. The ability to map axes onto different columns is
+particularly useful, for example, when one wishes to examine how
+several sets of ordinates differ when plotted against one set of
+abscissae. This is typical of the results obtained by running an
+experiment several times.
+
+   3. Drawing the graph points and the graph curve
+
+The position of each data point is calculated according to:
+
+pos = origin + scale * value
+
+This is calculated for X and Y components separately. The graph curve
+is drawn as a sequence of straight lines connecting the data
+points. Thus if the graph is not a straight line, a higher number of
+data points is better in terms of the curve being smooth. The curve
+can be smoothed by interpolating extra data points singly, or the
+approximating curve can be drawn directly with the specified number of
+sample points. If the approximation method has not been selected,
+Lagrange polynomial interpolation will be used by default (see section
+6a for more details).
+
+Drawing in the point markers is specified as another option in the
+graph options block. If specified, each point is added to the list of
+points (a component of the DisplayGraph.T). Once the list of points is
+built, the Repaint method of the DisplayGraph.T draws them. If the
+graph is showing the approximating curve rather than the exact data
+(being joined by straight lines), the exact data points may not lie on
+the approximating curve.
+
+   4. Drawing ticks and labels
+
+The ticks and labels are drawn along the axes using the same scaling
+technique as before. When drawing the labels, the position is
+calculated relative to the tick, using the bounding box of the text to
+be drawn. A call to VBT.BoundingBox returns the Rect.T which bounds
+the text as if it were painted at the origin. This can then be
+translated by the correct amount. There is one small problem:
+VBT.BoundingBox computes the box of the text as if it were painted on
+the VBT. This means that when the VBT is new and has not been
+installed, the bounding box is of zero size and hence the text gets
+put in the wrong place. A subsequent update of the graph fixes the
+problem, and it does not recur on subsequently deleting and
+re-installing the VBT.
+
+5. Formula Evaluation
+=====================
+a. General remarks
+
+Evaluation of expressions is done using an Eval.T object which
+encapsulates the data and methods needed. The Eval.T contains a stack
+and symbol table, as well as the textual expression to be
+evaluated. It also contains housekeeping information such as the
+'lookahead' token, the line number (for reporting errors) and a count
+of the variables in the formula which is used in mapping variables to
+the appropriate values in the Data.T when the expression is evaluated.
+
+b. Lexical Analyser
+
+The lexical analyser scans the input text and tokenises it, giving it
+an attribute value if appropriate. Whitespace (spaces and tabs) are
+ignored, while carriage returns cause the line number to be
+incremented (for error reporting). There are three other cases to
+consider when matching:
+
+1. Matching (digit|'.')*
+In this case, the analyser scans the text and converts it to a number
+of the appropriate type (either an INTEGER or a LONGREAL).
+
+2. Matching letter(letter|digit)* 
+
+After matching a string, it is looked up in the symbol table. If
+found, the looked up token-value pair is returned (this could be a
+function or an identifier). If not found, the string is assumed to be
+a new identifier and is inserted into the symbol table. The value is
+just the lexeme, and the variable count is incremented.
+
+3. Matching a single character
+The token-value pair returned is simply the character value and the
+character itself.
+
+c. Grammar for parsing
+
+The parser uses a recursive-descent technique, with operator
+precedence implemented naturally in the grammar. The order of
+precedence of operators is (in decreasing order of priority):
+
+( )            parentheses
+ -             unary minus (prefix)
+ !             factorial (postfix)
+ ^             power operator (right associative)
+* / DIV MOD    multiply, divide, integer divide and modulo
++ -            plus and minus
+
+The parser matches the expression according to the following grammar
+(with left recursion removed):
+
+start       ->  expr ;
+expr        ->  term moreterms
+moreterms   ->  + term
+                - term
+term        ->  factor morefactors
+morefactors ->  * factor
+                / factor
+                DIV factor
+                MOD factor
+factor      ->  subfactor ^ factor
+                subfactor
+subfactor   ->  index !
+                index
+index       ->  atom
+            ->  -index
+atom        ->  ( expr )
+                id
+                num
+                func ( expr1 , .. , exprN )
+
+The parser recursively matches expressions, emitting symbols as it
+parses. The basic element used is the token-value pair; the match
+method matches the token-value pair passed to it with the current
+'lookahead' token-value pair, and fetches the next 'lookahead'
+token-value pair by calling the lexical analyser. Each stage or
+parsing is implemented with a procedure corresponding to what must be
+matched at that stage (expr, term, factor, etc). As an example, the
+procedure for matching terms is as follows:
+
+PROCEDURE Term(self :T) RAISES {LexError, SyntaxError} = 
+VAR
+  t :TVPair;
+BEGIN
+  self.factor();                          (* match a factor *)
+  WHILE TRUE DO
+    CASE self.lookahead.token OF
+      | ORD('*'), ORD('/'), div, mod =>   (* lookahead is one of these *)
+        t := self.lookahead;              (* save it to be emitted *)
+        self.match(self.lookahead);       (* update it *)
+        self.factor();                    (* match another factor *)
+        self.emit(t);                     (* emit the operator *)
+      ELSE 
+        RETURN;  
+    END;
+  END;  
+END Term;
+
+The emit() function pushes token-value pairs onto the stack.
+
+d. Initial recursive-decent parser & proto-symbol table
+
+During the initial development, the parser was modelled on the
+recursive descent parser in chapter 2 of Aho, Sethi & Ullman[1]. It
+was prototyped in C in order to be rapidly compiled and tested several
+times during development. Once the grammar had been finalised, the
+parser was converted to Modula-3 and the somewhat simplistic symbol
+table was changed. An object-oriented evaluation scheme was
+introduced, while keeping the procedural nature of the translation
+scheme. The initial symbol table did not have good support for
+variables. After conversion to Modula-3 the code was kept
+independently in a 'test harness' until all the functionality had been
+implemented and tested (see section 5f). When the code was plugged
+into the project, the only task left was to bind the variables in the
+formula to values in the Data.T before evualation.
+
+e. Stack Evaluation and the Value.T object
+
+A Value.T is the basic object used in the evaluation of
+expressions. When evaluating a formula after parsing, the first
+token-value pair is popped from the stack. If this is an identifier,
+the value (Value.T) contains the text of the lexeme which is looked up
+in the symbol table, and the new pair of the token and the value is
+returned. If it is an operator or function, then according to the
+arity of the function, the eval method is called (recursively) to
+evaluate the arguments similarly, and the function is then applied to
+its arguments, the new token-value pair being returned. A Value.T is
+an object with methods for all operations (plus, minus, etc) defined
+on it, and also a totext() method which returns the value as a
+TEXT. Derived from this supertype are four different subtypes, with
+their internals hidden. These correspond to INTEGER, LONGREAL, CHAR
+and TEXT. The evaluation method merely sees Value.T objects with
+standard methods defined on them. Each derived type overrides the
+standard methods to allow for its own internal value type. Thus for
+example an INTEGER Value.T i can be added to a LONGREAL Value.T l
+simply by calling l.add(i) - the override method will test the type of
+its argument and provide the appropriate conversion.
+
+f. Extending the symbol table: adding functions, PI, e
+
+After developing the basic structure of the symbol table and the
+translation and evaluation scheme, it was simple to add functions and
+the constants PI and e into the symbol table. The structure of a
+symbol table entry is:
+
+Entry = RECORD
+          lexeme :TEXT;
+          token :INTEGER;
+          attrib :Value.T
+        END;
+
+For a function, the lexeme is the function text, the token is the
+function token, and the attrib is empty. For example, the sin function
+is Entry{"SIN",sin,0} where sin is a token constant defined in the
+interface. For an identifier, the lexeme is the identifier text
+(e.g. "PI"), the token is id (another token constant), and the attrib
+is the value of the identifier (e.g. 3.141... although this would be
+encapsulated in a Value.T of course). The functions supported in the
+expression evaluator (in addition to the operators mentioned in
+section 5c) are: SIN, COS, TAN, ASIN, ACOS, ATAN, EXP, LN, LOG, SQRT,
+ABS, MIN, MAX, ROUND, TRUNC, FLOOR, CEILING. Of these, all are unary
+functions except MIN and MAX, which are binary.
+
+g. Declarations: SUBJECT and DOMAIN
+
+Two special functions were introduced to enable binding of variables
+to elements of the Data.T (essential for evaluation). The SUBJECT
+function takes one argument, a variable, and flags it as being the
+subject of the expression. The subject cannot appear in the expression
+itself and is used to hold the result. The DOMAIN function specifies
+the domain of the function. Every variable which appears in the
+expression must have a domain specified. The syntax of DOMAIN is
+DOMAIN(x,a,b,s), signifying that the variable x will increase from a
+to b with s steps. Therefore this controls how many data points will
+be computed and in what range. When the DOMAIN function is evaluated,
+it makes 3 more entries in the symbol table: one for each of a, b, and
+s, naming them xmax, xmin and xsteps where x is the variable
+name. These three new entries are assigned the relevant attributes.
+
+h. Iterated evaluation and filling the data table
+
+In order to evaluate the expression, firstly a new data table is
+built, with one column for each variable in the expression. The
+variables are mapped to their respective columns, with the subject of
+the expression always mapped to column 0 (column 0 is also the default
+mapping of the ordinate axis). The columns for the (non-subject_
+variables are filled in by iterating over their domains as specified
+with the DOMAIN function. Once the abscissa data is done, the routine
+iterates over all the rows in the table, binding each variable in the
+expression to the right column, evaluating the expression, and putting
+the result into column 0.
+
+i. Error Messages
+
+There are four types of error messages: Lexical Errors happen when the
+input is in a bad format, for example a number contains 2 decimal
+points. Syntax Errors occur when the syntax is wrong, e.g. in the
+expression 2+-; syntax dictates that an expression must follow the
++. Both Lexical and Syntax Errors return the line number which the
+error occurs on. Evaluation Errors happen when the expression is
+semantically wrong in some way. For example, the DOMAIN function must
+have an INTEGER as its last argument. The last type of error (a Silly
+Error) occurs in evaluation when something goes wrong inside a method
+of the Value.T. For instance, it is not possible to compute factorials
+of negative numbers or non-integers.
+
+6. Numerical Analysis
+=====================
+a. Approximation
+
+The method of approximation used is stored as an Approx.T object,
+which is a component of the Graph.T. The Approx.T has an evaluate
+method, and child objects for each method of approximation are derived
+from the supertype, each one keeping its own state in hidden fields
+(for example the divided difference method needs no state, whereas the
+cubic spline must store coefficients for the sections of the
+curve. The Create procedure in the Approximation interface creates an
+object of the appropriate type and assigns the field of the Graph.T.
+
+   1. Lagrange Polynomial - Neville's Algorithm
+
+(ref: Press et al.[2])
+
+   2. Newton Divided Difference
+
+(ref: Burden & Faires[4])
+
+   3. Pade Rational Approximation
+
+(ref: Press et al.[2])
+
+   4. Least Squares
+
+(ref: Press et al.[2])
+
+   5. Cubic Splines
+
+(ref: Burden & Faires[4])
+
+   6. Contrast between data fitting and polynomial approximation
+
+b. Differentiation
+
+   1. Forward, Backward Difference
+
+   2. Central Difference
+
+   3. Error
+
+   4. Richardson's Extrapolation
+
+Numerical differentiation is usually an ill-conditioned
+problem. Crucial to the determination of the derivative is the value
+of the parameter h: if h is too large, the discretization error will
+be large, while if h is too small, the rounding error will be large.
+
+(ref: Burden & Faires[4])
+
+c. Quadrature
+
+All the quadrature routines work by evaluating the curve at points
+(either by splitting the interval into steps, or by evaluating the
+curve at specific points and multiplying with a weight function (see
+appendix for theory regarding specific methods). In order to evaluate
+the curve, the approximation function is used. If no approximation
+function has been selected, the interpolating Lagrange polynomial will
+be used by default.
+
+   1. Naive routines: Rectangle, Midpoint
+
+The first quadrature routines to be implemented were naive versions:
+the (repeated) Rectangle and Midpoint rules.
+
+   2. Fractional Accuracy
+
+The Trapezium rule, Simpson rule and Romberg rule all take as a
+parameter a fractional accuracy, and a maximum number of iterations
+(to prevent an infinite loop occuring if the fractional accuracy turns
+out to be too small or the integral is not converging quickly). They
+all are implemented as closed formulae, i.e. the value of the function
+is computed at both endpoints of the interval.
+
+   3. Composite Trapezium
+
+The composite Trapezium rule uses equally spaced abscissae, splitting
+the interval [a,b] into h strips of width (b-a)/h. For each strip, the
+area is found by the elementary calculation A = h * f(b)+f(a) / 2. A
+useful feature of the trapezium rule is that further refinement can be
+done without losing the benefit of the previous calculation. The
+procedure Trap does this:
+
+PROCEDURE Trap(z :Graph.T; a, b :Data.Element; n :INTEGER) :Data.Element 
+          RAISES {AnalOpt.Error} =
+VAR
+  tnm,sum,del :Data.Element := 0.0d0;
+  r, s := NEW(REF ARRAY OF Data.Element,1);
+BEGIN
+  (* this procedure progressively refines the extended trapezium rule
+     with the call n=1 then it computes the first refinement, then call
+     successively with 2,3 etc until required accuracy is met *)
+  r[0] := a;
+  s[0] := b;
+  IF n = 1 THEN
+    pointstoadd := 1;
+    resultsofar := 0.5d0 * (b-a) * (z.eval(r).yval + z.eval(s).yval);
+    (* the straightforward rule *)
+  ELSE
+    tnm := FLOAT(pointstoadd, Data.Element); (* how many points to add *)
+    del := (b-a)/tnm;                        (* incremental step *)
+    r[0] := a + 0.5d0 * del;     (* initial abscissa is del/2 along the line *)
+    FOR j := 1 TO pointstoadd DO
+      sum := sum + z.eval(r).yval;           (* compute the summ *)
+      r[0] := r[0] + del;                    (* increment the abscissa *)
+    END;
+    pointstoadd := pointstoadd * 2;          (* next time add twice as many *)
+    resultsofar := 0.5d0 * (resultsofar + (b-a) * sum/tnm);
+  END;
+  RETURN resultsofar;
+END Trap;
+
+(ref: Press et al.[2])
+
+The call to z.eval() takes a REF ARRAY as its argument in order to be
+able to deal with functions of n variables. The variables pointstoadd
+and resultsofar are defined at the module level and behave as static
+variables.
+
+This procedure is used as the basis for the Trapezium rule, which
+calls Trap repeatedly with n=1,2.. up to the maximum number of
+iterations specified in the options subwindow. As soon as the result
+is within the needed tolerance, it is returned. If the maximum number
+of iterations is completed and the tolerance has not been reached, an
+error is returned.
+
+   4. Composite Simpson
+
+The composite Simpson rule also uses Trap as its workhorse, and
+computes the integral according to the formula:
+
+S = (4/3)S(n) - (1/3)S(n-1)
+
+where n is the argument to the Trap function by which the previous
+result was calculated. Simpson's rule in general requires fewer
+function evaluations than the Trapezium rule when the function being
+evaluated has a continuous 3rd derivative.
+
+(ref: Press et al.[2])
+
+   5. Romberg Integration - concise Neville
+
+The Romberg integration routine is a generalisation of Simpson's rule
+to higher order polynomials. It uses the results from successive
+refinements of Trap, then extrapolates the 'true' result by
+extrapolating the value of the result to the case when the strip size
+h = 0. Neville's algorithm (see section 6a.1) is used to extrapolate;
+in fact since the extrapolation point is zero the algorithm is
+considerably more concise than in the general case.
+
+(ref: Press et al.[2])
+
+   6. Gaussian 
+
+See the Preparation chapter for an explanation of the theory of
+Gaussian integration. In order to convert the integral on the interval
+[a,b] to an integral on the interval [-1,1] the abscissa values
+obtained are transformed by the equation:
+
+x := (v * (b-a) + b+a)/2
+
+and the final integral result is multiplied by (b-a)/2.
+
+      a. Gauss-Legendre
+
+The values used in order n Gauss-Legendre integration are the roots of
+the nth Legendre polynomial (which tend to be irrational). Therefore
+the Legendre procedure, which returns an array of weights and abscissa
+values, has a maximum order constraint of 6, and returns the array
+from values which are hard coded into the routine (the values were
+obtained from Conte & de Boor[3]). Since the distribution of weights
+is symmetric, only half the weights need be computed, and for an order
+n calculation, only n additions and n/2 multiplications are needed.
+
+      b. Gauss-Chebyshev
+
+Gauss-Chebyshev integrals use as the abscissae the roots of the
+appropriate Chebyshev polynomial which are readily calculated from the
+formula:
+
+x(i) = cos((2i + 1) * PI / (2k+2))  [2]
+
+for values of i between 0 and k. The weights coincide, being equal to
+PI/(k+1). However the value of g(x(i)) must be multiplied by
+SQRT(1-x(i)^2) in order to obtain the true answer. This is done by
+assigning an extra weight w(i) which is equal to the above equation
+with sin substituted for cos (since SQRT(1-cos^2) = sin). The entire
+calculation of order n thus requires n additions and n+1
+multiplications.
+
+(ref: Conte & de Boor[2])
+
+d. Root finding 
+
+The root-finding algorithms all take three arguments: a and b,
+specifying the interval within which to look for a root of the graph,
+and acc, the absolute tolerance for the found root. Also specified is
+the maximum number of iterations to do, so that no algorithms enter
+infinite loops. Although the algorithms may be subtle, the control by
+the user is straightforward: roots are found one at a time, and since
+the graph is on the screen, it is easy to see where to search for
+roots. See the appendix for theoretical explanations of the methods.
+
+   1. Bisection method
+
+The most naive algorithm for finding a root is the method of
+progressively halving the interval and testing in which half the root
+occurs (the test is easy: f(a) * f(b) must be <= 0 if the root lies in
+the interval [a,b]). Since the bisection method halves the interval
+each time, the number of iterations required to reach an accuracy of
+acc is log2((b-a)/acc). The one great advantage of the bisection
+method is that it will always succeed. If the interval straddles not a
+root but a singularity, then the bisection method will converge on the
+singularity.
+
+(ref: Press et al.[2])
+
+   2. Newton-Raphson method 
+
+The Newton-Raphson method is the only one of the five methods that
+requires the derivative of the function. Finding the derivative of a
+function is often an ill-conditioned problem (see section 6b), and
+because of this, this method is more often used in multi-dimensional
+problems where other methods are not available. Since Newton-Raphson
+has poor convergence properties in the early stages, the algorithm
+here uses a combination of bisection and Newton-Raphson to get the
+best of both worlds. A bisection step is taken whenever the
+Newton-Raphson step would take the next evaluation point outside the
+current interval, or if the interval would be decreased by less than
+half.
+
+(ref: Press et al.[2])
+
+   3. Secant, False Position methods 
+
+The secant method is the only one of the five methods which may find a
+root not necessarily contained in the given interval. In both methods,
+the function is assumed to be nearly linear near the root, and the
+improvement is taken to be the value at which the line joining the two
+interval points crosses the axis. The difference between the methods
+is that in the case of the secant method, the last two points are used
+regardless of whether the root lies between them, while in the false
+position case, the lst two points which bracket the root are
+used. This explains why in the case of the secant method, a root
+outside the interval may be found, or indeed if the function is not
+sufficiently continuous, the algorithm may diverge.
+
+(ref: Press et al.[2])
+
+   4. Brent's method
+
+Brent's method is a combination of the bisection method with an
+improved version of the false position method. It guarantees at least
+linear convergence. It uses three previous root estimates to fit an
+inverse quadratic curve and obtain the next root estimate (i.e. x as a
+function involving y^2: contrast the secant and false position methods
+which used a linear function). However if the next estimate would fall
+outside the interval (owing to a bad estimate of the quadratic
+function if division by a very small number occurs), or would result
+in the new interval being more than half the old interval, then a
+bisection is used.
+
+(ref: Press et al.[2])
+
+7. Printing
+===========
+a. Postscript and M3 representations *
+   1. Paths *
+   2. Text *
+   3. Regions *
+
+
+References:
+
+[1] Compilers: Principles, Techniques and Tools (1986)
+    Alfred V. Aho, Ravi Sethi & Jeffrey D. Ullman 
+[2] Elementary Numerical Analysis: An Algorithmic Approach (1981)
+    Samuel D. Conte & Carl de Boor
+[3] Numerical Recipes in C (1988)
+    Press, Flannery, Teukolsky & Vetterling
+[4] Numerical Analysis, Fifth Edition (1993)
+    Richard L. Burden & J. Douglas Faires
+[5] Postscript Language Reference Manual (1985)
+    Adobe Systems Incorporated
+
+
+
+
+
+
+
+

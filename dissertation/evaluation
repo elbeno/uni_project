@@ -1,0 +1,47 @@
+Evaluation (include voluminous test data in appendix)
+
+Testing
+
+Loading and Saving Tests
+
+Data Editor Testing
+  Insertion/Removal of Rows and Columns
+  Updating the data
+  Abandoning the edited data
+
+Graph and Axis Options Testing
+  Changing the options
+    Ticks and labels
+    Title
+    Text fonts
+    Showing exact/approximation
+  Resizing the graph/border
+  Screenshots
+  Manipulating text on the graph
+
+Formula Evaluation Testing
+  Original Test Harness
+  Integrated Tests
+    Straight Polynomials
+    Trig functions
+    Math functions (EXP, LN, SQRT etc)
+    Misc functions (MAX, MIN, ROUND etc)
+  Provoking Error Messages
+
+Numerical Analysis Tests
+  Approximation
+    Interpolating single values
+    Lagrange
+    Cubic Splines
+  Quadrature
+    Naive Routines
+    Trapezium/Simpson/Romberg
+      (show how successively closer to true value)
+    Gaussian
+  Differentiation
+    Forward & Backward difference
+    Central difference
+
+  Making new graphs
+    
+Printing

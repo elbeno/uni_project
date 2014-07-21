@@ -1,0 +1,266 @@
+Introduction
+
+Motivation for the Project
+
+A common application in scientific computing is use of the
+computer for tabulation of data and results obtained by
+experiment. Such results are often presented in the form of a
+graph. Showing data by using a graph has two major advantages:
+it is easy to see relationships linking experimental
+quantities, and any experimental anomalies show up more
+easily. Therefore the aim of this project is to create a tool
+which displays arbitrary or experimental data in the form of a
+graph. Plotting the graph and manipulating the data should be
+interactive, easy to do, and should happen in real time on the
+screen for maximum understanding. Having plotted a graph of
+experimental data, one may wish to find the formal
+relationship linking the graph points, or to compare the
+results obtained against a standard known curve. It is also
+desirable to be able to identify salient features of the
+graph, and to know such things as the area contained under the
+graph. Therefore the project should provide support for
+plotting graphs from data in a natural way, and analysing the
+graph in certain ways mathematically.
+
+Computer Science Background
+
+The project addresses three main areas of Computer Science:
+user interface design, numerical analysis, and a limited
+amount of graphics. The user interface must support the
+activity of plotting and analysing graphs. Typically the sorts
+of analysis one wishes to perform on graphs includes curve
+fitting, interpolation and extrapolation of data points, and
+finding the gradient or the area underneath the graph. Various
+numerical analysis techniques can be usefully applied to
+achieve these aims. Obviously the area of computer graphics,
+and specifically the use of a coordinate graphics system, is
+involved in actually producing a graph to be displayed on
+screen. 
+
+Related programs
+
+Gnuplot is a well known command-line driven interactive
+plotting program which runs under unix. It concentrates on
+plotting functions, but also has support for plotting data to
+be compared to given functions. Gnuplot will plots 2D and 3D
+graphs, and functions can be built from C operators and
+library functions. It also has support for user defined
+functions and constants. It has several features and options
+such as axis labelling and scaling, and support for file
+operations. All computations performed by Gnuplot are done in
+the complex domain.
+
+Graph(1) is a standard unix command which when given no
+options will read in pairs of numbers from stdin, treating
+them as abscissae and ordinates for a cartesian graph. It has
+no support for plotting functions but only handles data, and
+joins plotted points on the graph with straight lines. There
+is some support for different options: the axes can be
+logarithmic, a grid can be overlayed on the graph, and
+individual points may be labelled.
+
+Reduce is a system for carrying out algebraic manipulations.
+It addresses a different area from this project but is worth
+considering so as to define what this project does not attempt
+to do. This project concentrates on numerical aspects and has
+no support for symbolic algebraic operations such as symbolic
+differentiation.
+Preparation
+
+Requirements Analysis
+
+1. Time. 
+
+The project deadline was May 19th, meaning a project lifetime
+of seven months from proposal to dissertation. The limited
+time had an influence on design choices.
+
+2. Access to Machines.
+
+The project had to be developed on machines with reliable
+continuous access, with enough disk space to store the
+project, dissertation and backups. The machines had to have a
+suitable operating system environment within which to develop
+the project.
+
+3. Graphics.
+
+The project was required to be graphical in nature. This meant
+having a graphical user interface and the graphics ability
+necessary to draw graphs. This graphical ability is influenced
+by having a suitable operating system environment.
+
+4. Numerical Ability.
+
+The numerical nature of the project meant that the programming
+environment and the language had to have support for
+floating-point calculations, and desirably would have a
+floating point maths library. 
+5. Language.
+
+The language chosen had to be suitable. This means that
+desirable features of the language are: suitability for
+writing large programs, an easy to use syntax and compiler,
+good support tools available (for example a user interface
+builder) and that the programmer should be knowledgable about
+it.
+
+Design Choices
+
+1. Choice of Machine and Development Environment.
+
+The Central Unix Service and the development environment of
+Unix and X were suitable because of the twenty-four hour
+availability (using machines on Cockcroft 4 or my own machine
+as an X terminal) and the reliability of the machines, and
+because of the ease of programming graphics under X. My own
+machine was similarly available to me, running Microsoft
+Windows - another graphical environment, but relying on just
+one machine is not advisable. Therefore I chose to use the
+Central Unix Service and Cockcroft 4 workstations.
+
+2. Choice of Language.
+
+C and Modula-3 both are available under Unix, and both fulfil
+the requirement of being known by the programmer. C has a tool
+for building user interfaces, Tcl and the Tk toolkit, but I
+was not familiar with Tcl or Tk. C does not lend itself to
+large projects since the language does not encourage
+modularisation, or have the advantage of strong type checking,
+and has a rather terse syntax. C does have a fast compiler and
+a floating point maths library. Modula-3 has a similar tool
+for user interfaces: the VBTkit and the FormsVBT language for
+specifying interface structure. I was more familiar with this
+than with Tcl/Tk, having programmed the user interface for my
+2nd year group project. Modula-3 supports the development of
+large programs with well-defined module boundaries, strong
+type-checking and encouragement of an object-oriented design
+strategy using data encapsulation and partially opaque object
+types, however the compiler is rather slow and produces large
+executable files. Modula-3 was chosen because of my
+familiarity with the language and the interface-building
+toolkit (initially learning Tcl/Tk would have been more risky
+given the hard real-time constraint) and because of the ease
+of following a modular object-oriented design.
+
+3. Design Strategy.
+
+The project was designed following an object-oriented
+strategy. The user interface was initially prototyped using
+the formsvbt language, to obtain an initial 'look and feel'
+for the project. The project was divided into sections dealing
+with the basic concepts: data from which to plot a graph, the
+graphical display of the graph, and the user interface.
+
+4. Data Handling.
+
+The project should provide a way to easily handle numerical
+data. This involves the concept of a 'data editor' which
+supports the operations of changing numeric values, adding new
+values and removing values. The data should be presented in
+tuples corresponding to plotted graph points. In this way the
+relationship between the data and the displayed graph can be
+easily seen, and the data can easily be manipulated.
+
+5. Graph Display.
+
+The graph displayed on screen should be generic. The project
+concentrates on a Cartesian X-Y graph, but in principle the
+displayed graph could be of any type. The graph should be
+scaled appropriately and the axes labelled. There should be
+options to control how the ticks are drawn, to put a title on
+the graph, and the graph should be able to be easily updated
+and manipulated.
+
+6. Expression Evaluation.
+
+The project should include an expression evaluator for
+creating graphs from given expressions, to view standard
+results. The expression evaluator should include support for
+polynomials, trigonometric functions and exponential
+functions: a minimal set for useful results. It should also
+provide a means of specifying the domain of the function.
+Standard operator precedence is also desirable. 
+7. Numerical Analysis.
+
+The graphs will mostly be created from experimental data,
+which is not usually exact. Therefore there should be the
+facility to fit data to a curve, to approximate the value of
+higher order functions by lower order functions, and to
+interpolate data points. Also the project should be able to
+perform quadrature to find the area underneath graphs, be able
+to differentiate graphs, and be able to find roots of a graph.
+
+8. Filing.
+
+Graphs should be able to be loaded and saved as text files of
+numeric values (the raw data). It is also desirable to be able
+to save and load graphs as graphs, i.e. to include information
+apart from the data, such as the way that the graph is
+displayed. The project should be capable of printing graphs to
+a file.
+
+9. User Interface.
+
+The user interface should be easy to use, and should support
+all of the operations required on graphs and data. Options for
+displaying the graph and editing the data should be easy to
+use so that changes in the data can be quickly seen on the
+graph. Access to all numerical analysis and expression
+evaluation options should be easy, as should the method of
+loading, saving and printing files.
+
+Technical and Theoretical Background
+
+The major area of theory in the project is numerical analysis,
+specifically approximation theory, quadrature theory, and
+methods for differentiating and finding roots of a graph.
+Numerical analysis techniques are limited in accuracy in two
+ways: rounding error (owing to inaccuracy of the floating
+point representation itself) and discretization error
+(necessarily caused by approximation of continuous quantities
+by discrete values).
+
+Approximation Theory
+
+Approximation theory falls into two distinct sections:
+approximating a function (using another function or number of
+functions of lower order) and approximating data by a
+function. In the former case the approximating function is
+normally constructed so as to intersect the higher order
+function at given abscissa values, while in the latter case
+the data is not usually accurate and so it is more desirable
+to obtain a smooth curve which does not necessarily pass
+through all (or any) data points, but which models the
+behaviour of the data well. Methods falling into the first
+category include approximation by low order polynomials, and
+by cubic splines, while in the latter category a typical
+strategy is that of 'least squares' curve fitting.
+
+Quadrature Theory
+
+
+There are a great deal of methods available for finding the
+area underneath a graph (the integral). Naive methods
+generally work by splitting the interval into a finite number
+of equally sized strips, from which the area is calculated by
+some rule. These Riemann sums converge to the true value of
+the integral as the number of strips tends to infinity. More
+sophisticated methods involve the use of orthogonal and
+weighting functions. The theories for each technique are
+covered in the appropriate section of chapter 3.
+
+Differentiation and Root Finding
+
+Numerical differentiation methods are ill-conditioned to begin
+with (a small perturbation in the input data causes the result
+to change by a large amount). The problem is made worse if a
+function is only known at a number of points. However since
+the project provides a facility for approximating data by a
+smooth function, differentiation of that function is the
+sensible approach to take. Some care is needed in minimising
+error when differentiating. Root finding methods are various,
+and as with quadrature, naive methods can be useful as a basis
+for more subtle approaches. Details of specific
+differentiation and root finding techniques are given in the
+relevant sections of chapter 3.
